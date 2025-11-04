@@ -9,6 +9,9 @@ s=socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.bind(("0.0.0.0",10000))
 s.settimeout(10.0)
 sequence_number = 0
+
+server_address = "3.109.3.254"
+
 while True:
     if sequence_number == 253:
         sequence_number=0
@@ -30,14 +33,13 @@ while True:
         byte_data_size=data_size.to_bytes(4,byteorder="big")
         byte_sequence_number = sequence_number.to_bytes(1,byteorder="big")
         packet = byte_sequence_number+byte_id+byte_data_size+byte_stream[starting_index:ending_index]
-        s.sendto(packet,("3.109.3.254",8000))
+        s.sendto(packet,(server_address,8000))
         id+=1
-
     byte_id = id.to_bytes(2,byteorder="big")
     byte_data_size=data_size.to_bytes(4,byteorder="big")
     byte_sequence_number = sequence_number.to_bytes(1,byteorder="big")
     last = byte_sequence_number+byte_id+byte_data_size+byte_stream[last_index:last_index+remain]
-    s.sendto(last,("3.109.3.254",8000))
+    s.sendto(last,(server_address,8000))
     sequence_number+=1
 
     if cv2.waitKey(1) == ord('q'):

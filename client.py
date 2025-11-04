@@ -11,11 +11,11 @@ s.settimeout(10)
 s.bind(("0.0.0.0",11000))
 heartbeat=0
 image_path = "D:/Personal/videoStreamer/output.jpg"
+server_address = "3.109.3.254"
 
 def send_heartbeat():
     while True:
-        # print("sending heartbeat")
-        s.sendto(b'heartbeat',("3.109.3.254",8000))
+        s.sendto(b'heartbeat',(server_address,8000))
         time.sleep(1)
 
 t1 = threading.Thread(target=send_heartbeat,daemon=True)
@@ -26,10 +26,8 @@ while True:
     try:
         if connected_flag==False:
             while True:
-                # print("requesting handshake")
-                s.sendto(handshake.encode("utf-8"),("3.109.3.254",8000))
+                s.sendto(handshake.encode("utf-8"),(server_address,8000))
                 data,addr = s.recvfrom(106)
-                # print("handshake received ",str(data))
                 if data== b'hello':
                     connected_flag= True
                     break
@@ -41,9 +39,7 @@ while True:
         old_sequence=-1
         current_sequence = 0
         while True:
-            # print("requesting image")
             buf,addr = s.recvfrom(907)
-            # print("data received ",str(buf))
             current_sequence = buf[0]
             if current_sequence!=old_sequence and old_sequence>-1:
                 order_map={}
@@ -83,5 +79,4 @@ while True:
         s.close()
 
     except Exception as e:
-        # print("exception as e")
         connected_flag=0
